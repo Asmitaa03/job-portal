@@ -1,0 +1,84 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+/app/generated/prisma
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# Build/cache
+.turbo/
+.cache/
+
+# Secrets and local config
+.envrc
+.npmrc
+*.key
+*.crt
+
+# Local databases (e.g., SQLite)
+prisma/*.db
+prisma/*.db-journal
+
+# Local data/uploads not needed in repo
+
+public/resumes/
+
+# Large/local assets
+public/sampleimgs/
+public/**/*.mp4
+public/**/*.mov
+public/**/*.zip
+
+# Build caches
+.swc/
+.eslintcache
+
+# Temp files
+.tmp/
+.temp/
+*.tmp

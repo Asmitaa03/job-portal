@@ -1,0 +1,92 @@
+export const sampleJobs = [
+  {
+    id: "job_fe_lead",
+    title: "Senior Frontend Engineer",
+    department: "Engineering",
+    description:
+      "Own the frontend architecture, build delightful UIs with React and Tailwind. Collaborate with design to bring micro-interactions to life.\n\nWhat you will do:\n- Build accessible, high-performance UI\n- Lead component library development\n- Mentor frontend engineers",
+    requirements:
+      "- 5+ years with React/Next.js\n- Strong TypeScript skills\n- CSS-in-JS or Tailwind experience\n- Performance optimization & accessibility",
+    location: "Remote / Bangalore",
+    employmentType: "FULL_TIME",
+    salaryRange: "$80k – $140k",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "job_ds",
+    title: "Data Scientist",
+    department: "Data Science",
+    description:
+      "Design ML models to power recommendations and insights. Work closely with product to deliver measurable impact.",
+    requirements:
+      "- 3+ years in ML/DS\n- Python, Pandas, Scikit-learn\n- SQL, experimentation, dashboards",
+    location: "Hybrid / London",
+    employmentType: "FULL_TIME",
+    salaryRange: "$90k – $150k",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "job_pm",
+    title: "Product Manager",
+    department: "Product",
+    description:
+      "Drive product strategy and execution across cross-functional teams. Ship features users love.",
+    requirements:
+      "- 4+ years product management\n- Strong UX sense\n- Excellent communication",
+    location: "Remote",
+    employmentType: "FULL_TIME",
+    salaryRange: "$85k – $130k",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+];
+
+export const sampleApplications = [
+  {
+    id: "app_1",
+    jobId: "job_fe_lead",
+    applicantName: "Alex Chen",
+    applicantEmail: "alex.chen@example.com",
+    applicantPhone: "+1 555 201 2233",
+    resumeUrl: "/resumes/sample-alex.pdf",
+    resumeText: null,
+    atsScore: 88,
+    experienceYears: 6,
+    skills: ["react", "typescript", "nextjs", "tailwind", "testing"],
+    status: "APPLIED",
+    createdAt: new Date().toISOString(),
+    job: { title: "Senior Frontend Engineer", department: "Engineering" },
+  },
+  {
+    id: "app_2",
+    jobId: "job_fe_lead",
+    applicantName: "Priya Singh",
+    applicantEmail: "priya.singh@example.com",
+    applicantPhone: "+91 98 765 43210",
+    resumeUrl: "/resumes/sample-priya.pdf",
+    resumeText: null,
+    atsScore: 77,
+    experienceYears: 4,
+    skills: ["react", "redux", "javascript", "css"],
+    status: "REVIEWING",
+    createdAt: new Date().toISOString(),
+    job: { title: "Senior Frontend Engineer", department: "Engineering" },
+  },
+  {
+    id: "app_3",
+    jobId: "job_ds",
+    applicantName: "Diego Ramos",
+    applicantEmail: "diego.r@example.com",
+    applicantPhone: "+34 600 111 222",
+    resumeUrl: "/resumes/sample-diego.pdf",
+    resumeText: null,
+    atsScore: 82,
+    experienceYears: 5,
+    skills: ["python", "pandas", "sklearn", "sql", "dashboards"],
+    status: "SHORTLISTED",
+    createdAt: new Date().toISOString(),
+    job: { title: "Data Scientist", department: "Data Science" },
+  },
+];

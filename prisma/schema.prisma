@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          UserRole  @default(ADMIN)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Job {
+  id          String        @id @default(cuid())
+  title       String
+  department  String
+  description String        @db.Text
+  requirements String       @db.Text
+  responsibilities String?  @db.Text
+  benefits     String?      @db.Text
+  location    String?
+  employmentType String?    // FULL_TIME, PART_TIME, CONTRACT, etc.
+  salaryRange String?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  applications Application[]
+  
+  @@index([isActive])
+}
+
+model Application {
+  id              String      @id @default(cuid())
+  jobId           String
+  job             Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicantName   String
+  applicantEmail  String
+  applicantPhone  String?
+  linkedinUrl     String?
+  resumeUrl       String
+  resumeText      String?     @db.Text  // Extracted text from resume for ATS
+  resumeSummary   Json?       // Parsed JSON summary via OpenAI
+  coverLetter     String?     @db.Text
+  atsScore        Float?      @default(0) // ATS compatibility score (0-100)
+  experienceYears Int?        // Extracted from resume
+  skills          String[]    // Extracted skills
+  status          AppStatus   @default(APPLIED)
+  notes           String?     @db.Text  // Admin notes
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@index([jobId])
+  @@index([status])
+  @@index([atsScore])
+}
+
+enum UserRole {
+  ADMIN
+  RECRUITER
+}
+
+enum AppStatus {
+  APPLIED
+  REVIEWING
+  SHORTLISTED
+  REJECTED
+  HIRED
+}
