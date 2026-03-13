@@ -29,7 +29,24 @@ A stunning, feature-rich job portal with beautiful animations, ATS scoring, and 
 - **Animations**: Framer Motion
 - **Charts**: Recharts
 - **Form Handling**: React Hook Form + Zod
-- **File Parsing**: pdf-parse
+- **Resume Parsing**: pdf-parse (PDF text extraction for ATS)
+
+## Architecture
+
+- **Public app**: Server-rendered and client pages for landing, job list, job detail, and application form. Data is fetched from Next.js API routes.
+- **Admin app**: Session-protected routes under `/admin` (dashboard, applications, jobs). NextAuth credentials provider with JWT; admin layout wraps all admin pages.
+- **API**: REST-style routes under `/api` for jobs (CRUD), applications (create + list/update), and auth. Resume files are stored on disk under `public/resumes/`; resume text is extracted and stored for ATS and search.
+- **ATS pipeline**: On application submit, the server extracts text from the uploaded PDF/TXT, parses skills and years of experience, runs the ATS scorer against the job description, then persists the application with score and parsed fields.
+
+## Tech Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| **Next.js App Router** | Single codebase for SSR, API routes, and client navigation; good DX and deployment (e.g. Vercel). |
+| **Prisma + PostgreSQL** | Type-safe schema, migrations, and one source of truth for jobs, applications, and users. |
+| **NextAuth credentials** | Simple admin auth without OAuth; JWT keeps session stateless. |
+| **Resume text extraction** | ATS needs plain text; we extract from PDF/TXT at upload time and store it so scoring and future features (e.g. search) don’t re-parse files. |
+| **File-based resume storage** | Keeps the demo simple; for production you’d use object storage (e.g. S3/Vercel Blob) and signed URLs. |
 
 ## Setup Instructions
 
@@ -73,7 +90,15 @@ This creates a default admin user:
 
 **⚠️ Important**: Change the default password after first login!
 
-### 5. Start Development Server
+### 5. Run Tests
+
+```bash
+npm run test
+```
+
+Tests cover the ATS scorer (`calculateATSScore`, `parseResume`) and resume text extraction (`extractResumeText`). Use `npm run test:watch` for watch mode.
+
+### 6. Start Development Server
 
 ```bash
 npm run dev
@@ -107,20 +132,24 @@ Visit:
 │   └── AdminLayout.tsx            # Admin layout wrapper
 ├── lib/
 │   ├── prisma.ts                  # Prisma client instance
-│   └── ats-scorer.ts              # ATS scoring algorithm
+│   ├── ats-scorer.ts              # ATS scoring algorithm
+│   └── resume-parser.ts           # PDF/TXT text extraction for resumes
 └── prisma/
     └── schema.prisma              # Database schema
 ```
 
 ## ATS Scoring Algorithm
 
-The ATS (Applicant Tracking System) scorer evaluates resumes based on:
+The ATS (Applicant Tracking System) scorer runs on **extracted resume text** (from PDF or TXT uploads) and compares it to the job’s requirements and description. It outputs a **0–100% compatibility score** and is used to sort and filter applications in the admin dashboard.
 
-1. **Skills Matching (40%)** - Matches skills from resume against job requirements
-2. **Experience Matching (30%)** - Compares years of experience with requirements
-3. **Keyword Matching (30%)** - Analyzes keyword frequency and relevance
+**Weight breakdown:**
 
-The algorithm extracts information from PDF/text resumes and calculates a compatibility score (0-100%).
+1. **Skills / keyword match (~45%)** – Term and phrase overlap between resume and job (including synonyms and “required/preferred” weighting).
+2. **Experience (~25%)** – Years of experience parsed from the resume vs. requirements mentioned in the job text.
+3. **Soft skills (~10%)** – Presence of terms like communication, leadership, teamwork in the resume.
+4. **Keyword coverage (~20%)** – Fraction of important job terms found in the resume.
+
+Resume text is extracted in `lib/resume-parser.ts` (PDF via pdf-parse, TXT as plain text). Parsed skills and experience are stored on the application and used by `lib/ats-scorer.ts`.
 
 ## Database Schema
 

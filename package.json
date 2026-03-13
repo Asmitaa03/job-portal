@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint",
     "create-admin": "tsx scripts/create-admin.ts",
     "figma:fetch": "tsx scripts/fetch-figma.ts",
@@ -52,6 +54,7 @@
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

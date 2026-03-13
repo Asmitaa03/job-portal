@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { calculateATSScore } from "@/lib/ats-scorer";
+import { calculateATSScore, parseResume } from "@/lib/ats-scorer";
+import { extractResumeText } from "@/lib/resume-parser";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
-import { sampleApplications } from "@/lib/sample-data";
 
 export async function GET(request: NextRequest) {
   try {
@@ -90,19 +90,30 @@ export async function POST(request: NextRequest) {
 
     const resumeUrl = `/resumes/${fileName}`;
 
-    // Text extraction disabled for now
-    let resumeText = "";
+    // Extract text from resume (PDF or TXT) for ATS scoring
+    const { text: resumeText } = await extractResumeText(
+      buffer,
+      resumeFile.type,
+      resumeFile.name
+    );
+    const fallbackText = `${applicantName} ${applicantEmail} ${coverLetter ?? ""}`.trim();
+    const textForAts = resumeText || fallbackText;
 
-    // Calculate ATS score only
+    // Parse resume for experience and skills (used in ATS and stored on application)
+    const parsed = parseResume(textForAts);
+    const experienceYears = parsed.experienceYears ?? 0;
+    const skills = parsed.skills ?? [];
+
+    // Calculate ATS score from extracted resume content
     const atsResult = calculateATSScore(
-      resumeText || `${applicantName} ${applicantEmail}`,
+      textForAts,
       job.requirements,
       job.description,
-      0
+      experienceYears
     );
     const finalAts = atsResult.score;
 
-    // Create application
+    // Create application with parsed resume data
     const application = await prisma.application.create({
       data: {
         jobId,
@@ -111,11 +122,11 @@ export async function POST(request: NextRequest) {
         applicantPhone: applicantPhone || null,
         linkedinUrl,
         resumeUrl,
-        resumeText: resumeText || null,
+        resumeText: textForAts || null,
         coverLetter,
         atsScore: finalAts,
-        experienceYears: null,
-        skills: [],
+        experienceYears: experienceYears || null,
+        skills,
         status: "APPLIED",
       },
     });
